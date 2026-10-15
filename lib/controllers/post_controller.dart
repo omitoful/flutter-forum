@@ -31,10 +31,42 @@ class PostController extends GetxController {
       );
 
       if (response.statusCode == 200) {
+        posts.value.clear();
         for (var item in json.decode(response.body)['feeds']) {
           posts.value.add(PostModel.fromJson(item));
         }
         print(posts.value);
+      } else {
+        Get.snackbar(
+          'Error',
+          json.decode(response.body)['message'],
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future createPost({required String content}) async {
+    try {
+      isLoading.value = true;
+
+      var response = await http.post(
+        Uri.parse('${url}feed/store'),
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer ${box.read('token')}',
+        },
+        body: {'content': content},
+      );
+
+      if (response.statusCode == 200) {
+        print(json.decode(response.body));
       } else {
         Get.snackbar(
           'Error',

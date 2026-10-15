@@ -47,8 +47,18 @@ class _HomePageState extends State<HomePage> {
                   padding: EdgeInsets.symmetric(horizontal: 50, vertical: 10),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                 ),
-                onPressed: () {},
-                child: Text('Post'),
+                onPressed: () async {
+                  await _postController.createPost(
+                    content: _textEditingController.text.trim(),
+                  );
+                  _textEditingController.clear();
+                  _postController.getAllPost();
+                },
+                child: Obx(() {
+                  return _postController.isLoading.value
+                      ? Center(child: CircularProgressIndicator())
+                      : Text('Post');
+                }),
               ),
               SizedBox(height: 30),
               Text('Posts'),
