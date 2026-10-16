@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:forumapp/constants.dart';
+import 'package:forumapp/models/comment_model.dart';
 import 'package:forumapp/models/post_model.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -9,6 +10,7 @@ import 'package:http/http.dart' as http;
 
 class PostController extends GetxController {
   Rx<List<PostModel>> posts = Rx<List<PostModel>>([]);
+  Rx<List<CommentModel>> comments = Rx<List<CommentModel>>([]);
   final isLoading = false.obs;
   final box = GetStorage();
 
@@ -67,6 +69,40 @@ class PostController extends GetxController {
 
       if (response.statusCode == 200) {
         print(json.decode(response.body));
+      } else {
+        Get.snackbar(
+          'Error',
+          json.decode(response.body)['message'],
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future getComments(id) async {
+    try {
+      isLoading.value = true;
+
+      var response = await http.get(
+        Uri.parse('${url}feed/comments/$id'),
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer ${box.read('token')}',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        comments.value.clear();
+        for (var item in json.decode(response.body)['comments']) {
+          comments.value.add(CommentModel.fromJson(item));
+        }
+        print(comments.value);
       } else {
         Get.snackbar(
           'Error',

@@ -5,7 +5,7 @@ class PostModel {
   final String createdAt;
   final String updatedAt;
   final bool liked;
-  final User user;
+  final User? user;
 
   PostModel({
     required this.id,
@@ -14,7 +14,7 @@ class PostModel {
     required this.createdAt,
     required this.updatedAt,
     required this.liked,
-    required this.user,
+    this.user,
   });
 
   factory PostModel.fromJson(Map<String, dynamic> json) {
@@ -25,7 +25,7 @@ class PostModel {
       createdAt: json['created_at'],
       updatedAt: json['updated_at'],
       liked: json['liked'] ?? false,
-      user: User.fromJson(json['user']),
+      user: json['user'] != null ? User.fromJson(json['user']) : null,
     );
   }
 
@@ -37,7 +37,7 @@ class PostModel {
       'created_at': createdAt,
       'updated_at': updatedAt,
       'liked': liked,
-      'user': user.toJson(),
+      'user': user?.toJson(),
     };
   }
 }
