@@ -76,7 +76,14 @@ class _PostDetailsState extends State<PostDetails> {
                   padding: EdgeInsets.symmetric(horizontal: 50, vertical: 10),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                 ),
-                onPressed: () async {},
+                onPressed: () async {
+                  await _postController.createComment(
+                    widget.post.id,
+                    _commentController.text.trim(),
+                  );
+                  _commentController.clear();
+                  _postController.getComments(widget.post.id);
+                },
                 child: Obx(() {
                   return _postController.isLoading.value
                       ? Center(child: CircularProgressIndicator())
